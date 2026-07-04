@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="WARN">
+
+    <Properties>
+        <Property name="LOG_DIR">logs</Property>
+        <Property name="PATTERN">
+            %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
+        </Property>
+    </Properties>
+
+    <Appenders>
+
+        <!-- Console Logs -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${PATTERN}"/>
+        </Console>
+
+        <!-- Application Logs -->
+        <RollingFile name="ApplicationLog"
+                     fileName="${LOG_DIR}/application.log"
+                     filePattern="${LOG_DIR}/archive/application-%d{yyyy-MM-dd}-%i.log.gz">
+
+            <PatternLayout pattern="${PATTERN}"/>
+
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+        <!-- Error Logs -->
+        <RollingFile name="ErrorLog"
+                     fileName="${LOG_DIR}/error.log"
+                     filePattern="${LOG_DIR}/archive/error-%d{yyyy-MM-dd}-%i.log.gz">
+
+            <PatternLayout pattern="${PATTERN}"/>
+
+            <Filters>
+                <ThresholdFilter level="ERROR"
+                                 onMatch="ACCEPT"
+                                 onMismatch="DENY"/>
+            </Filters>
+
+            <Policies>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+
+        <!-- Framework Package -->
+        <Logger name="com.orangehrm"
+                level="debug"
+                additivity="false">
+
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="ApplicationLog"/>
+            <AppenderRef ref="ErrorLog"/>
+
+        </Logger>
+
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="ApplicationLog"/>
+        </Root>
+
+    </Loggers>
+
+</Configuration>
